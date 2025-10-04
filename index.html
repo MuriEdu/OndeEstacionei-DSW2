@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Onde Estacionei?</title>
+    <link rel="stylesheet" href="common.css">
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+</head>
+<body>
+    <div class="phone-screen">
+        <header>
+            <img src="./assets/logo.png" alt="Onde Estacionei?"/>
+        </header>
+
+        <div id="not-parked-view">
+            <div id="map"></div>
+            <footer class="sticky-footer">
+                <button class="btn-park" onclick="window.location.href='page2.html'">
+                    <img src="./assets/iconeEstacionar.png"/>
+                    Estacionar
+                </button>
+                <button class="btn-history" onclick="window.location.href='page3.html'">
+                    <img src="./assets/iconeHistorico.png"/>
+                </button>
+            </footer>
+        </div>
+
+        <div id="parked-view" style="display: none;">
+            <div id="map-parked"></div>
+            <div class="parked-info">
+                <img id="parked-image" class="parked-image" />
+                <div class="parked-buttons">
+                    <button class="btn-where">Onde Estacionei?</button>
+                    <button class="btn-unpark">Já Saí</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div id="location-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-button">&times;</span>
+                <h2>Localização do Veículo</h2>
+                <div id="modal-map"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const modal = document.getElementById('location-modal');
+            modal.style.display = 'none';
+
+            const currentPark = JSON.parse(localStorage.getItem('currentPark'));
+            const btnWhere = document.querySelector('.btn-where');
+            const closeButton = document.querySelector('.close-button');
+            let modalMap;
+
+            const closeModal = () => {
+                modal.style.display = 'none';
+                if (modalMap) {
+                    modalMap.remove();
+                    modalMap = null;
+                }
+            };
+
+            if (currentPark) {
+                // Parked view
+                document.getElementById('not-parked-view').style.display = 'none';
+                document.getElementById('parked-view').style.display = 'block';
+
+                const { latitude, longitude, image } = currentPark;
+
+                const map = L.map('map-parked').setView([latitude, longitude], 15);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+                L.marker([latitude, longitude]).addTo(map);
+
+                document.getElementById('parked-image').src = image;
+
+                document.querySelector('.btn-unpark').addEventListener('click', () => {
+                    localStorage.removeItem('currentPark');
+                    window.location.reload();
+                });
+
+                btnWhere.addEventListener('click', () => {
+                    modal.style.display = 'block';
+                    setTimeout(() => {
+                        modalMap = L.map('modal-map').setView([latitude, longitude], 15);
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(modalMap);
+                        L.marker([latitude, longitude]).addTo(modalMap);
+                        modalMap.invalidateSize();
+                    }, 10); // Small delay to ensure modal is visible
+                });
+
+            } else {
+                // Not parked view
+                document.getElementById('not-parked-view').style.display = 'block';
+                document.getElementById('parked-view').style.display = 'none';
+
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(position => {
+                        const { latitude, longitude } = position.coords;
+                        const map = L.map('map').setView([latitude, longitude], 15);
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+                        L.marker([latitude, longitude]).addTo(map).bindPopup('Você está aqui!').openPopup();
+                    }, () => {
+                        const map = L.map('map').setView([-22.0154, -47.8911], 15);
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+                        alert("Não foi possível obter sua localização. Mostrando localização padrão.");
+                    });
+                } else {
+                    const map = L.map('map').setView([-22.0154, -47.8911], 15);
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+                    alert("Geolocalização não é suportada pelo seu navegador. Mostrando localização padrão.");
+                }
+            }
+
+            closeButton.addEventListener('click', closeModal);
+            window.addEventListener('click', (event) => {
+                if (event.target == modal) {
+                    closeModal();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
