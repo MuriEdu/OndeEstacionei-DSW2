@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History</title>
+    <link rel="stylesheet" href="common.css">
+    <link rel="stylesheet" href="page3.css">
+</head>
+<body>
+    <div class="phone-screen">
+        <header>
+            <img src="./assets/logo.png" alt="Onde Estacionei?"/>
+        </header>
+        <div class="main-content">
+            <div class="main-content">
+            <div class="history-container">
+                
+            </div>
+        </div>
+        <footer class="sticky-footer">
+            <button class="btn-home" onclick="window.location.href='index.html'">Home</button>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const historyContainer = document.querySelector('.history-container');
+            const parks = JSON.parse(localStorage.getItem('parks')) || [];
+
+            if (parks.length > 0) {
+                parks.forEach(park => {
+                    const parkCard = document.createElement('div');
+                    parkCard.classList.add('history-card');
+
+                    const date = new Date(park.date);
+                    const formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+
+                    parkCard.innerHTML = `
+                        <div class="history-icon">
+                            <img src="./assets/iconeEstacionar.png" alt="Park Icon">
+                        </div>
+                        <div class="history-details">
+                            <p class="history-date">${formattedDate}</p>
+                            <p class="history-name">${park.name}</p>
+                        </div>
+                    `;
+
+                    historyContainer.appendChild(parkCard);
+                });
+            } else {
+                historyContainer.innerHTML = '<p class="no-history">Nenhum histórico de estacionamento encontrado.</p>';
+            }
+        });
+    </script>
+</body>
+</html>
