@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Park</title>
+    <link rel="stylesheet" href="common.css">
+    <link rel="stylesheet" href="page2.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+</head>
+<body>
+    <div class="phone-screen">
+        <header>
+            <img src="./assets/logo.png" alt="Onde Estacionei?"/>
+        </header>
+        <div class="main-content">
+            <div class="main-content">
+            <div class="form-container">
+                <div id="map-square"></div>
+                <input type="text" placeholder="Name" class="input-name">
+                <div class="upload-container">
+                    <img id="image-preview" class="image-preview" />
+                    <p>Selecione uma imagem de onde estacionou</p>
+                    <button class="btn-upload">↑ Upload</button>
+                    <input type="file" id="file-input" accept="image/*" style="display: none;">
+                </div>
+                <button class="btn-submit">Estacionar</button>
+                <button class="btn-cancel" onclick="window.location.href='index.html'">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            let currentCoords = [-22.0154, -47.8911];
+            let map;
+
+            const initMap = (lat, lon) => {
+                currentCoords = [lat, lon];
+                map = L.map('map-square').setView(currentCoords, 15);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(map);
+                L.marker(currentCoords).addTo(map);
+            };
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(position => {
+                    initMap(position.coords.latitude, position.coords.longitude);
+                }, () => {
+                    initMap(currentCoords[0], currentCoords[1]);
+                    alert("Não foi possível obter sua localização. Mostrando localização padrão.");
+                });
+            } else {
+                initMap(currentCoords[0], currentCoords[1]);
+                alert("Geolocalização não é suportada pelo seu navegador. Mostrando localização padrão.");
+            }
+
+            const uploadButton = document.querySelector('.btn-upload');
+            const fileInput = document.getElementById('file-input');
+            const imagePreview = document.getElementById('image-preview');
+
+            uploadButton.addEventListener('click', () => {
+                fileInput.click();
+            });
+
+            fileInput.addEventListener('change', () => {
+                const file = fileInput.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        imagePreview.src = e.target.result;
+                        imagePreview.style.display = 'block';
+                        uploadButton.style.display = 'none';
+                        uploadButton.previousElementSibling.style.display = 'none';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            const submitButton = document.querySelector('.btn-submit');
+            submitButton.addEventListener('click', () => {
+                const name = document.querySelector('.input-name').value;
+                const image = imagePreview.src;
+
+                if (!name || !image) {
+                    alert('Por favor, preencha o nome e selecione uma imagem.');
+                    return;
+                }
+
+                const park = {
+                    name,
+                    latitude: currentCoords[0],
+                    longitude: currentCoords[1],
+                    image,
+                    date: new Date().toISOString()
+                };
+
+                let parks = JSON.parse(localStorage.getItem('parks')) || [];
+                parks.push(park);
+                localStorage.setItem('parks', JSON.stringify(parks));
+                localStorage.setItem('currentPark', JSON.stringify(park));
+
+                window.location.href = 'index.html';
+            });
+        });
+    </script>
+</body>
+</html>
