@@ -27,30 +27,7 @@ O projeto foi cuidadosamente planejado e desenvolvido para atender integralmente
 | :---     | :---                         | :---                                                                                                                                                                                                                  |
 | **R1** | **Identidade Visual e Layout** | Foi desenvolvida uma identidade visual e um layout minimalista e intuitivo. A paleta de cores e a iconografia foram escolhidas para remeter a aplicativos de navegação, conferindo uma aparência de aplicativo real. |
 | **R2** | **Múltiplas Telas/Páginas** | O aplicativo conta com duas telas principais: a **Tela Principal** (para registro e visualização no mapa) e a **Tela de Histórico**.                                                                                 |
-| **R3** | **Layout Responsivo** | A aplicação foi projetada com um layout responsivo, garantindo a adequada visualização e funcionalidade em dispositivos móveis, tablets e desktops.                                                                   |
-| **R4** | **Duas Telas Funcionais** | Ambas as telas são funcionais: a **Tela Principal** implementa a lógica de captura e exibição da localização, e a **Tela de Histórico** consulta e exibe os dados salvos no Web Storage.                            |
-| **R5** | **Acesso à Rede** | O acesso à rede é feito para carregar os mapas do serviço externo OpenStreetMap.                                                                                                                                      |
-| **R6** | **Uso de API Adicional** | O projeto utiliza duas APIs adicionais: a **API de Geolocalização**, para obter as coordenadas do usuário, e a **API de Web Storage**, para persistir os dados localmente no navegador.                               |
-
-## ⚙️ Como Executar o Projeto
-
-Para executar o projeto localmente, siga os passos abaixo:
-
-```bash
-# 1. Clone o repositório
-git clone [https://github.com/seu-usuario/seu-repositorio.git](https://github.com/seu-usuario/seu-repositorio.git)
-
-# 2. Navegue até o diretório do projeto
-cd nome-do-repositorio
-
-# 3. Instale as dependências
-npm install
-
-# 4. Inicie a aplicação
-npm start
-```
-
-A aplicação estará disponível em `http://localhost:3000`.
+| **R3** | **Layout Responsivo** | A aplicação foi projetada com um layout responsivo, garantindo a adequada visualização e funcionalidade em dispositivos móveis, tablets e desktops.                                                                   |                            |
 
 ## 🧑‍💻 Autores
 
